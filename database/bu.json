@@ -1,0 +1,51 @@
+{
+    "users": [
+      {
+        "id": 1,
+        "data": {
+          "name": "agustin",
+          "lastname": "pastorino",
+          "age": 38
+        },
+        "username": "a.ruiz",
+        "password": "maitena",
+        "tenant": "lordOfTheRing",
+        "createDate": "",
+        "rank": 25,
+        "tags": ["developer", "male", 120]
+      },
+      {
+        "id": 2,
+        "data": {
+          "name": "ivana",
+          "lastname": "ortega",
+          "age": 39
+        },
+        "username": "i.ortega",
+        "password": "maitena",
+        "tenant": "lordOfTheRing",
+        "createDate": "",
+        "rank": 50,
+        "tags": ["agent", "female", 70]
+      },
+      {
+        "id": 3,
+        "data": {
+          "name": "jorge",
+          "lastname": "ruiz",
+          "age": 63
+        },
+        "username": "j.ruiz",
+        "password": "maitena",
+        "tenant": "lordOfTheRing",
+        "createDate": "",
+        "rank": 75,
+        "tags": ["programer", "male", 110]
+      }
+    ],
+    "accounts": [],
+    "movements": [],
+    "categories": [],
+    "loans": []
+  }
+  

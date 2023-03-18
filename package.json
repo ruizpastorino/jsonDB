@@ -1,0 +1,16 @@
+{
+  "name": "jsondb",
+  "version": "1.0.0",
+  "description": "small sync data base for local storage",
+  "type": "module",
+  "main": "./database/testDB.js",
+  "scripts": {
+    "start": "nodemon --ignore db.json ./database/testDB.js"
+  },
+  "author": "agustin ruiz pastorino",
+  "license": "ISC",
+  "dependencies": {
+    "nodemon": "^2.0.20",
+    "uuid": "^9.0.0"
+  }
+}
