@@ -33,20 +33,3 @@ export const Type = (value) => {
     ? typeof value
     : undefined
 }
-
-export const getFields = (data, doc) => {
-  let payload = doc
-  if (Type(data) === 'function') {
-    payload = { id: doc.id, ...data(doc) }
-  }
-  if (Type(data) === 'array') {
-    const fields = data.reduce((acc, curr) => {
-      if (doc.hasOwnProperty(curr)) {
-        acc[curr] = doc[curr]
-      }
-      return acc
-    }, {})
-    payload = { id: doc.id, ...fields }
-  }
-  return payload
-}

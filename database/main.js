@@ -12,7 +12,7 @@ let db = {}
 let filename = 'db.json'
 
 export const createConection = (name) => {
-  filename = name || "db.json"
+  filename = name || 'db.json'
   let defaultModels = Object.entries(models).reduce((acc, [key, value]) => {
     acc[key] = value
     return acc
@@ -40,6 +40,13 @@ export const CreateModel = (schema, name) => {
   return newModel
 }
 
+const Options = {
+  fields: Array || { include: Array || Function, exclude: Array || Function },
+  sortBy: String || Array,
+  order: String,
+  populate: String || Array || Object,
+}
+
 export class Model {
   constructor(name, schema, options = {}) {
     this.name = name
@@ -47,13 +54,13 @@ export class Model {
     this.schema = schema
   }
 
-  find(filter = {}, { data } = {}) {
-    const results = useMatch(db[this.name], filter, data).results()
+  find(filter = {}, options = Options) {
+    const results = useMatch(db[this.name], filter, options).results()
     return new Results(results)
   }
 
-  findOne(filter = {}, { data } = {}) {
-    const results = useMatch(db[this.name], filter, data).results()
+  findOne(filter = {}, options = Options) {
+    const results = useMatch(db[this.name], filter, options).results()
     return new Result(results[0])
   }
 
@@ -77,14 +84,8 @@ export class Model {
 
 class Result {
   #values
-  #fields
   constructor(values = {}) {
     this.#values = values
-    this.#fields = undefined
-  }
-
-  fields(schema) {
-    this.#fields = schema
   }
 
   populate(reference) {
@@ -102,7 +103,6 @@ class Result {
 
 class Results extends Result {
   #values
-  #fields
   constructor(values = []) {
     super(values)
     this.#values = values

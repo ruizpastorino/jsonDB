@@ -2,6 +2,31 @@ import { CreateModel } from './main.js'
 
 const schemas = {}
 
+schemas.users = {
+  data: {
+    name: 'string',
+    lastname: 'string',
+    age: 'number',
+    birthDate: 'date',
+    gender: 'string',
+  },
+  active: { type: 'boolean', default: true },
+  username: 'string',
+  password: 'string',
+  tenant: 'string',
+  rank: 'number',
+  tags: [],
+  createDate: { type: 'date', default: new Date().toISOString() },
+  relatives: [
+    {
+      name: 'string',
+      lastname: 'string',
+      age: { type: 'date', required: true },
+      id: false,
+    },
+  ],
+}
+
 schemas.accounts = {
   name: 'string',
   type: 'string',
@@ -53,40 +78,6 @@ schemas.movements = {
   user: { type: 'ref', schema: 'users' },
   accountBalance: { type: 'number', default: 0 },
   type: { type: 'string', default: 'expense' },
-}
-
-schemas.users = {
-  data: {
-    type: {
-      type: {
-        name: { type: 'string', default: 'user' },
-        profile: { type: 'string', default: 'admin' },
-        id: false,
-      },
-      default: {}, //default deberia incluir el name tambien
-    },
-    name: 'string',
-    lastname: 'string',
-    age: 'number',
-    birthDate: 'date',
-    gender: 'string',
-  },
-  active: { type: 'boolean', default: true },
-  username: 'string',
-  password: 'string',
-  tenant: 'string',
-  rank: 'number',
-  tags: [],
-  createDate: { type: 'date', default: new Date().toISOString() },
-  relatives: [
-    {
-      name: 'string',
-      lastname: 'string',
-      age: { type: 'date', required: true },
-      id: false,
-      default: { type: 'string', default: 'default value' },
-    },
-  ],
 }
 
 export const User = CreateModel(schemas.users, 'users')

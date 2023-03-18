@@ -5,7 +5,7 @@ createConection('db.json')
 
 User.add({
   data: {
-    name: 'maitena',
+    name: "maitena",
     lastname: 'ruiz ortega',
     age: 6,
     gender: 'female',
@@ -28,10 +28,10 @@ const newUser = User.find({ username: 'm.ruiz' })
 
 const res = newUser.values()
 
-console.clear()
+/* console.clear() */
 console.log(
   `\n************************ RESULTS ************************\n`,
-  update,
+  res,
   `\n`,
 )
 

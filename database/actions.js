@@ -1,4 +1,4 @@
-import { getFields, Type } from './helpers.js'
+import { Type } from './helpers.js'
 import evalSchema from './validateSchema.js'
 
 export const validateModel = (data, schema) => {
@@ -6,15 +6,32 @@ export const validateModel = (data, schema) => {
   return payload
 }
 
-export const find = (list, params, keys) => {
+export const find = (list, params, options) => {
   const docs = []
   list.forEach((doc) => {
     if (Match(params, doc)) {
-      const payload = getFields(keys, doc)
+      const payload = getFields(options.fields, doc)
       docs.push(payload)
     }
   })
   return docs
+}
+
+export const getFields = (fields, doc) => {
+  let payload = doc
+  if (Type(fields) === 'object') {
+    payload = { id: doc.id, ...fields(doc) }
+  }
+  if (Type(fields) === 'array') {
+    const fields = fields.reduce((acc, curr) => {
+      if (doc.hasOwnProperty(curr)) {
+        acc[curr] = doc[curr]
+      }
+      return acc
+    }, {})
+    payload = { id: doc.id, ...fields }
+  }
+  return payload
 }
 
 export const update = (list, params, upgrade = {}, keys) => {
