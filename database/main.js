@@ -6,42 +6,40 @@ import { validateModel } from './actions.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
-const models = {}
+const collections = {}
+
+let filename = 'db.json'
 
 let db = {}
-let filename = 'db.json'
 
 export const createConection = (name) => {
   filename = name || 'db.json'
-  let defaultModels = Object.entries(models).reduce((acc, [key, value]) => {
-    acc[key] = value
+  let defaults = Object.keys(collections).reduce((acc, key) => {
+    acc[key] = []
     return acc
   }, {})
-
   let file = {}
   try {
-    const rawFile = fs.readFileSync(path.join(__dirname, name))
-    file = JSON.parse(rawFile)
+    file = readFile()
   } catch (error) {
-    console.log(error)
-    writeFile(defaultModels)
-    return defaultModels
+    writeFile(defaults)
+    return collections
   }
-  const isModelsComplete = Object.keys(defaultModels).every((key) => file[key])
-  db = { ...defaultModels, ...file }
+  const isModelsComplete = Object.keys(defaults).every((key) => file[key])
   if (!isModelsComplete) {
+    let db = { ...defaults, ...file }
     writeFile(db)
   }
 }
 
 export const CreateModel = (schema, name) => {
   const newModel = new Model(name, schema)
-  models[name] = schema
+  collections[name] = schema
   return newModel
 }
 
-const Options = {
-  fields: Array || { include: Array || Function, exclude: Array || Function },
+const optionsModel = {
+  fields: Object || { exclude: Object },
   sortBy: String || Array,
   order: String,
   populate: String || Array || Object,
@@ -54,84 +52,85 @@ export class Model {
     this.schema = schema
   }
 
-  find(filter = {}, options = Options) {
+  find(filter = {}, options = optionsModel) {
     const results = useMatch(db[this.name], filter, options).results()
-    return new Results(results)
+    return Results(results)
   }
 
-  findOne(filter = {}, options = Options) {
+  findOne(filter = {}, options = optionsModel) {
     const results = useMatch(db[this.name], filter, options).results()
-    return new Result(results[0])
+    return Result(results[0])
   }
 
-  update(upgrade = {}, filter = {}) {
-    const results = useMatch(db[this.name], filter).update(upgrade)
-    return new Results(results)
+  update(data = {}, filter = {}) {
+    const { docs, collection } = useMatch(db[this.name], filter).update(data)
+    db[this.name] = collection
+    writeFile(db)
+    return { updated: docs, total: docs.length }
   }
 
-  add(doc) {
-    const payload = validateModel(doc, this.schema)
-    db[this.name].push(payload)
-    /* writeFile(db) */
-    return payload
+  add(data) {
+    const doc = validateModel(data, this.schema)
+    db[this.name].push(doc)
+    writeFile(db)
+    return doc
   }
 
-  remove(filter = {}) {
-    const results = useMatch(db[this.name], filter).remove()
-    return new Results(results)
-  }
-}
-
-class Result {
-  #values
-  constructor(values = {}) {
-    this.#values = values
-  }
-
-  populate(reference) {
-    if (Array.isArray(this.values)) {
-      return new Results(this.values)
-    } else {
-      return new Result(this.values)
-    }
-  }
-
-  values() {
-    return this.#values
+  remove(filter = {}, options = optionsModel) {
+    const { removed, collection } = useMatch(db[this.name], filter).remove()
+    db[this.name] = collection
+    writeFile(db)
+    return { removed, total: removed.legnth }
   }
 }
 
-class Results extends Result {
-  #values
-  constructor(values = []) {
-    super(values)
-    this.#values = values
-  }
+const Result = (values) => ({
+  values: () => {
+    return values
+  },
+})
 
-  count() {
-    return this.#values.length || 0
-  }
+const Results = (values = []) => {
+  return {
+    count: () => {
+      return values.length || 0
+    },
 
-  limit(qty, offset = 0) {
-    return new Results(
-      this.#values.slice(offset, qty + offset || this.#values.length),
-    )
-  }
+    limit: (qty, offset = 0) => {
+      return Results(values.slice(offset, qty + offset || values.length))
+    },
 
-  sort(field, order) {
-    let sorted = this.#values
+    sort: (field, order) => {
+      let sorted = values
 
-    if (!!field) {
-      sorted = this.#values.sort((a, b) => {
-        if (a[field] < b[field]) return -1
-        if (a[field] > b[field]) return 1
-        return 0
-      })
-    }
+      if (!!field) {
+        sorted = values.sort((a, b) => {
+          if (a[field] < b[field]) return -1
+          if (a[field] > b[field]) return 1
+          return 0
+        })
+      }
 
-    return new Results(order === 'DESC' ? sorted.reverse() : sorted)
+      return Results(order === 'DESC' ? sorted.reverse() : sorted)
+    },
+    values: () => {
+      return values
+    },
   }
 }
 
-const writeFile = (file) =>
-  fs.writeFileSync(path.join(__dirname, filename), JSON.stringify(file))
+const readFile = (collection) => {
+  try {
+    const rawFile = fs.readFileSync(path.join(__dirname, filename))
+    const file = JSON.parse(rawFile)
+    db = file
+    return collection ? file[collection] : file
+  } catch {
+    throw Error('no such file in folder')
+  }
+}
+
+const writeFile = (upgrade) => {
+  /* fs.writeFileSync(path.join(__dirname, filename), JSON.stringify(upgrade)) */
+  db = upgrade
+}

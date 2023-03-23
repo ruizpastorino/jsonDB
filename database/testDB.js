@@ -5,7 +5,7 @@ createConection('db.json')
 
 User.add({
   data: {
-    name: "maitena",
+    name: 'maitena',
     lastname: 'ruiz ortega',
     age: 6,
     gender: 'female',
@@ -22,17 +22,19 @@ User.add({
   ],
 })
 
-const update = User.update({ data: { age: 7 } }, { username: 'm.ruiz2' })
+User.update({ data: { name: 132 } }, { username: 'm.ruiz2' })
+User.remove({ data: { gender: 'male' } })
 
-const newUser = User.find({ username: 'm.ruiz' })
+const res = User.findOne({ username: 'm.ruiz2' }).values()
 
-const res = newUser.values()
-
-/* console.clear() */
 console.log(
   `\n************************ RESULTS ************************\n`,
   res,
   `\n`,
 )
 
-// falta buscar regex o ilike
+// probar types unique
+// popular campos
+// buscar en campos populados
+// validate push each no valida
+// no se esta validando el update de un documento

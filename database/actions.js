@@ -7,42 +7,56 @@ export const validateModel = (data, schema) => {
 }
 
 export const find = (list, params, options) => {
+  const { fields } = options
   const docs = []
   list.forEach((doc) => {
     if (Match(params, doc)) {
-      const payload = getFields(options.fields, doc)
+      const payload = typeof fields === 'object' ? getFields(fields, doc) : doc
       docs.push(payload)
     }
   })
   return docs
 }
 
-export const getFields = (fields, doc) => {
-  let payload = doc
-  if (Type(fields) === 'object') {
-    payload = { id: doc.id, ...fields(doc) }
-  }
-  if (Type(fields) === 'array') {
-    const fields = fields.reduce((acc, curr) => {
-      if (doc.hasOwnProperty(curr)) {
-        acc[curr] = doc[curr]
-      }
-      return acc
-    }, {})
-    payload = { id: doc.id, ...fields }
+export const getFields = (schema, doc, exclude) => {
+  const excluding =
+    exclude || (schema?.exclude && Type(schema.exclude) === 'object')
+  let payload = {}
+
+  for (let key in excluding ? doc : schema) {
+    const schemaKey = schema[key] || schema.exclude?.[key]
+    switch (Type(schemaKey)) {
+      case 'object':
+        payload[key] = getFields(schemaKey, doc[key], excluding)
+        break
+      case 'array':
+        payload[key] = doc[key].map((d) =>
+          getFields(schemaKey[0], d, excluding),
+        )
+        break
+      default:
+        if (excluding ? schemaKey !== true : !!schemaKey) {
+          payload[key] = doc[key]
+        }
+
+        break
+    }
   }
   return payload
 }
 
-export const update = (list, params, upgrade = {}, keys) => {
+export const update = (list, params, upgrade = {}) => {
+  let updated = 0
   const docs = []
-  list.forEach((doc) => {
+  const collection = list.map((doc) => {
     if (Match(params, doc)) {
+      updated++
       doc = setChanges(upgrade, doc)
-      docs.push(getFields(keys, doc))
+      docs.push(doc)
     }
+    return doc
   })
-  return docs
+  return { docs, collection, updated }
 }
 
 export const setChanges = (upgrade, doc, currKey) => {
@@ -70,7 +84,7 @@ export const setChanges = (upgrade, doc, currKey) => {
             return doc.push(value)
           }
         case '$set':
-          return
+          return doc = value
       }
     } else {
       if (Type(value) === 'object') {
@@ -87,6 +101,17 @@ export const setChanges = (upgrade, doc, currKey) => {
   return doc
 }
 
+export const remove = (list, params) => {
+  let removed = 0
+  const collection = list.filter((doc) => {
+    if (!Match(params, doc)) {
+      removed++
+      return doc
+    }
+  })
+  return { removed, collection }
+}
+
 export const Match = (params, data) => {
   const keys = Object.entries(params)
 
@@ -97,6 +122,9 @@ export const Match = (params, data) => {
 
     if (key.charAt(0) === '$') {
       switch (key) {
+        case '$regex':
+          const regex = new RegExp(param)
+          return data.match(regex)
         case '$or':
           return params.$or?.some((or) => Match(or, data))
 

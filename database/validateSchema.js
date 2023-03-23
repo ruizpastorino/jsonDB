@@ -62,7 +62,7 @@ const evaluate = (ref, data, currKey) => {
         } at ${currKey}`
 
         if (!data && data !== 0 && !!ref.required) {
-          throw Error(`Field ${currKey} it's required as a ${schemaType} value`)
+          throw Error(`Field ${currKey} it's required as a ${schemaType} value but recived ${data}`)
         }
 
         if (!data) {
