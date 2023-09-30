@@ -3,81 +3,82 @@ import { CreateModel } from './main.js'
 const schemas = {}
 
 schemas.users = {
-  data: {
-    name: 'string',
-    lastname: 'string',
-    age: 'number',
-    birthDate: 'date',
-    gender: 'string',
-  },
-  active: { type: 'boolean', default: true },
-  username: 'string',
-  password: 'string',
-  tenant: 'string',
-  rank: 'number',
-  tags: [],
-  createDate: { type: 'date', default: new Date().toISOString() },
-  relatives: [
-    {
-      name: 'string',
-      lastname: 'string',
-      age: { type: 'date', required: true },
-      id: false,
-    },
-  ],
+	username: { type: 'string', required: true },
+	data: {
+		name: 'string',
+		lastname: 'string',
+		age: 'number',
+		birthDate: 'date',
+		gender: { type: 'string', enum: ['male', 'female'] },
+	},
+	active: { type: 'boolean', default: true },
+	password: 'string',
+	tenant: 'string',
+	tags: ['string'],
+	createDate: { type: 'date', default: new Date().toISOString() },
+	rank: 'number',
+	relatives: [
+		{
+			name: { type: 'string', required: true },
+			lastname: 'string',
+			age: 'date',
+			id: false,
+			nicknames: [{ id: false, name: { type: 'string', required: true } }],
+		},
+	],
 }
 
 schemas.accounts = {
-  name: 'string',
-  type: 'string',
-  state: { type: 'string', default: 'active' },
-  balance: { type: 'number', default: 0 },
-  user: { type: 'ref', schema: 'accounts' },
-  keys: [],
-  nKeys: [],
-  owner: 'object',
+	name: 'string',
+	type: 'string',
+	state: { type: 'string', default: 'active' },
+	balance: { type: 'number', default: 0 },
+	user: { type: 'ref', schema: 'accounts' },
+	keys: [],
+	nKeys: [],
+	owner: 'object',
 }
 
 const subCategory = {
-  name: 'string',
-  icon: 'string',
+	name: 'string',
+	icon: 'string',
 }
 
 schemas.categories = {
-  user: { type: 'ref', schema: 'users' },
-  name: 'string',
-  subCategories: [subCategory],
-  icon: 'string',
+	user: { type: 'ref', schema: 'users' },
+	name: 'string',
+	subCategories: [subCategory],
+	icon: 'string',
 }
 
 const payment = {
-  date: { type: 'date', default: Date.now().toString() },
-  amount: 'number',
-  destiny: { type: 'ref', schema: 'accounts' },
-  type: 'string',
+	date: { type: 'date', default: Date.now().toString() },
+	amount: 'number',
+	destiny: { type: 'ref', schema: 'accounts' },
+	type: 'string',
 }
 
 schemas.loans = {
-  amount: { type: 'string', default: 0 },
-  date: { type: 'date', default: Date.now().toString() },
-  state: { type: 'string', default: 'active' },
-  person: { type: 'ref', schema: 'accounts' },
-  origin: { type: 'ref', schema: 'accounts' },
-  user: { type: 'ref', schema: 'users' },
-  payments: [payment],
+	amount: { type: 'string', default: 0 },
+	date: { type: 'date', default: Date.now().toString() },
+	state: { type: 'string', default: 'active' },
+	person: { type: 'ref', schema: 'accounts' },
+	origin: { type: 'ref', schema: 'accounts' },
+	user: { type: 'ref', schema: 'users' },
+	payments: [payment],
 }
 
 schemas.movements = {
-  amount: { type: 'string', default: 0 },
-  category: 'string',
-  subCategory: 'string',
-  date: { type: 'date', default: Date.now().toString() },
-  state: { type: 'string', default: 'active' },
-  origin: { type: 'ref', schema: 'accounts' },
-  destiny: { type: 'ref', schema: 'accounts' },
-  user: { type: 'ref', schema: 'users' },
-  accountBalance: { type: 'number', default: 0 },
-  type: { type: 'string', default: 'expense' },
+	amount: { type: 'string', default: 0 },
+	category: 'string',
+	subCategory: 'string',
+	date: { type: 'date', default: Date.now().toString() },
+	state: { type: 'string', default: 'active' },
+	origin: { type: 'ref', schema: 'accounts' },
+	destiny: { type: 'ref', schema: 'accounts' },
+	user: { type: 'ref', schema: 'users' },
+	accountBalance: { type: 'number', default: 0 },
+	type: { type: 'string', default: 'expense' },
 }
 
 export const User = CreateModel(schemas.users, 'users')

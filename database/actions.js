@@ -1,4 +1,4 @@
-import { Type } from './helpers.js'
+import { Type, isArray, isObject } from './helpers.js'
 import evalSchema from './validateSchema.js'
 
 export const validateModel = (data, schema) => {
@@ -7,14 +7,10 @@ export const validateModel = (data, schema) => {
 }
 
 export const find = (list, params, options) => {
-  const { fields } = options
-  const docs = []
-  list.forEach((doc) => {
-    if (Match(params, doc)) {
-      const payload = typeof fields === 'object' ? getFields(fields, doc) : doc
-      docs.push(payload)
-    }
-  })
+  const docs = list.reduce((arr, doc) => {
+    if (Match(params, doc)) arr.push(doc)
+    return arr
+  }, [])
   return docs
 }
 
@@ -75,19 +71,19 @@ export const setChanges = (upgrade, doc, currKey) => {
           return (doc += amouont)
 
         case '$push':
-          if (!Array.isArray(doc)) {
+          if (!isArray(doc)) {
             throw Error(errors.pushNotArray(currKey))
           }
-          if (!!upgrade.$push.$each) {
+          if (!!upgrade.$push?.$each) {
             return doc.push(...value.$each)
           } else {
             return doc.push(value)
           }
         case '$set':
-          return doc = value
+          return (doc = value)
       }
     } else {
-      if (Type(value) === 'object') {
+      if (isObject(value)) {
         doc[key] = setChanges(
           value,
           doc[key],
@@ -131,16 +127,15 @@ export const Match = (params, data) => {
         case '$and':
           return params.$and?.every((or) => Match(or, data))
 
-        case '$match':
-          return param?.every((f) => !!data?.includes(f))
-
         case '$in':
-          if (Type(param) !== 'array') {
+          if (!isArray(param)) {
             return data?.some((v) => Match(param, v))
           } else {
             return data?.some((v) => param?.some((f) => Match(f, v)))
           }
 
+        case '$match':
+          return param?.every((f) => !!data?.includes(f))
         case '$gte':
           return data >= param
 

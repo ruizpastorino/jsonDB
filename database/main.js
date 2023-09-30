@@ -2,7 +2,9 @@ import * as url from 'url'
 import path from 'path'
 import fs from 'fs'
 import useMatch from './useMatch.js'
-import { validateModel } from './actions.js'
+import evalSchema from './validateSchema.js'
+import { isObject } from './helpers.js'
+import { getFields } from './actions.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
@@ -63,16 +65,19 @@ export class Model {
   }
 
   update(data = {}, filter = {}) {
-    const { docs, collection } = useMatch(db[this.name], filter).update(data)
+    const doc = evalSchema(this.schema, data, true)
+    console.log(`\n\n ////////////// END ////////////// \n`)
+    const { docs, collection } = useMatch(readFile()[this.name], filter).update(doc)
     db[this.name] = collection
     writeFile(db)
     return { updated: docs, total: docs.length }
   }
 
   add(data) {
-    const doc = validateModel(data, this.schema)
+    const doc = evalSchema(this.schema, data, false)
     db[this.name].push(doc)
     writeFile(db)
+    console.log(`\n\n ////////////// END ////////////// \n`)
     return doc
   }
 
@@ -80,13 +85,15 @@ export class Model {
     const { removed, collection } = useMatch(db[this.name], filter).remove()
     db[this.name] = collection
     writeFile(db)
+    console.log(`\n\n ////////////// END ////////////// \n`)
     return { removed, total: removed.legnth }
   }
 }
 
 const Result = (values) => ({
-  values: () => {
-    return values
+  values: (keys) => {
+    if(!isObject(keys)) return values
+    return getFields(keys,values)
   },
 })
 
@@ -113,8 +120,9 @@ const Results = (values = []) => {
 
       return Results(order === 'DESC' ? sorted.reverse() : sorted)
     },
-    values: () => {
-      return values
+    values: (keys) => {
+      if(!isObject(keys)) return values
+      return values.map(doc=> getFields(keys,doc))
     },
   }
 }
