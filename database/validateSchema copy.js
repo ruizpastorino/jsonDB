@@ -3,21 +3,20 @@ import { v4 } from 'uuid'
 
 const evalSchema = (schema, data, update) => {
 	console.log(`\n\n///////////////////////////// EVAL\n\n`)
-	if (!schema) throw new Error('Model should be passed as params')
+	if (!schema) throw new Error('Model must be passed as params')
 	return evaluate(schema, data, undefined, update)
 }
 
 const evaluate = (ref, data, crtKey, update) => {
 	try {
 		let schema = ref?.type || ref
-		console.log('Evaluando: ' + (crtKey || 'ROOT'))
+		console.log('Evaluando: ' + crtKey)
 		if (!schema) return
-		console.log(`Case ${Type(data).toUpperCase()}`)
-
-		switch (Type(ref)) {
+		switch (Type(data)) {
 			/////////////////////////OBJECT CASE/////////////////////////////
 			case 'object':
-				if (!isObject(data)) {
+				console.log(`Case ${Type(data)}`)
+				if (!isObject(schema)) {
 					if (!update) throw Error(errorMsg(data, schema, crtKey))
 				}
 				const subData = {}
@@ -27,7 +26,7 @@ const evaluate = (ref, data, crtKey, update) => {
 					id = ID()
 				} else if (!!data.id) {
 					if (typeof data.id !== 'string') {
-						throw Error('Id field should be a string')
+						throw Error('Id field must be a string')
 					}
 					id = data.id
 				}
@@ -35,28 +34,21 @@ const evaluate = (ref, data, crtKey, update) => {
 				const keys = Object.keys(update ? data : schema)
 
 				keys.forEach(key => {
-					const nextData = data[key]
-					let nextSchema = schema[0]?.[key] || schema[key]
+					const dataKey = data[key]
+					let schemaKey = schema[0]?.[key] || schema[key]
 					const location = crtKey ? `${crtKey}.${key}` : key
 
-					printLog({
-						data,
-						schema,
-						schemaKey: nextSchema,
-						dataKey: nextData,
-						key,
-						keys,
-					})
+					printLog({ data, schema, schemaKey, dataKey, key, keys })
 
 					if (key.includes('$')) {
 						console.log(`Action: ${key}`)
-						subData[key] = evaluate(schema, nextData, location, update)
+						subData[key] = evaluate(schema, dataKey, location, update)
 					} else {
 						if (!update) {
 							if (!schema.hasOwnProperty(key)) return
 							if (isArray(schema)) throw Error(errorMsg(data, schema, crtKey))
 						}
-						const payload = evaluate(nextSchema, nextData, location, update)
+						const payload = evaluate(schemaKey, dataKey, location, update)
 						if (payload !== undefined) subData[key] = payload
 					}
 				})
@@ -68,20 +60,23 @@ const evaluate = (ref, data, crtKey, update) => {
 
 			/////////////////////////ARRAY CASE/////////////////////////////
 			case 'array':
-				if (!isArray(data)) throw Error(errorMsg(data, schema, crtKey, update))
-				if (!isArray(schema)) throw Error(errorMsg(data, schema, crtKey))
-				
-				if (schema[0]) {
-					return data.map((doc, idx) => {
-						const location = `${crtKey}[${idx}]`
-						return evaluate(schema[0], doc, location)
-					})
+				console.log(`Case ${Type(data)}`)
+				if (isArray(schema)) {
+					if (schema[0]) {
+						return data.map((doc, idx) => {
+							const location = `${crtKey}[${idx}]`
+							return evaluate(schema[0], doc, location)
+						})
+					}
+				} else {
+					throw Error(errorMsg(data, schema, crtKey))
 				}
-
 				return data
 
 			/////////////////////////DEFAULT CASE/////////////////////////////
 			default:
+				console.log(`Case ${Type(data)}`)
+
 				if (isNull(data)) {
 					if (!!ref.required) {
 						throw Error(`Field ${crtKey} it's required
@@ -106,7 +101,7 @@ const evaluate = (ref, data, crtKey, update) => {
 					if (Type(data) === schema) {
 						if (!!isArray(ref.enum) && !ref.enum.find(param => param === data)) {
 							throw new Error(
-								`Value ${data} of ${crtKey} should be one of [${ref.enum}]`
+								`Value ${data} of ${crtKey} must be one of [${ref.enum}]`
 							)
 						}
 						return data
@@ -116,31 +111,26 @@ const evaluate = (ref, data, crtKey, update) => {
 				}
 		}
 	} catch (error) {
-		//console.log(error)
 		throw Error(error.message)
 	}
 }
 
 //////////////////////////////////////////////////////////FIN DE EVALUACION
 
-const errorMsg = (value, schema, location, update) => {
-	let valuePart = ''
-	if (value === 'string') valuePart = `"${value}"`
-	else if (typeof value === 'object') valuePart = Type(value)
-	else valuePart = value
-
-	let shouldBeValue = ''
-	if (typeof schema === 'object') {
-		if (isArray(schema) && schema[0]) {
-			shouldBeValue = `it should be an array of ${Type(
-				schema[0].type || schema[0]
-			)}s`
-		} else {
-			shouldBeValue = Type(schema)
-		}
-	} else shouldBeValue = schema || 'Something'
-
-	return `Value ${valuePart}  in ${location} it should be a ${shouldBeValue}.`
+const errorMsg = (value, schema, location) => {
+	return `Value ${
+		typeof value === 'string'
+			? `"${value}"`
+			: typeof value === 'object'
+			? Type(value)
+			: value
+	} in ${location} must be an ${
+		typeof schema === 'object'
+			? schema[0]
+				? Type(schema[0]) //aca no estoy consiguiendo el tipo de un push
+				: Type(schema)
+			: schema || 'Something'
+	}.`
 }
 
 export default evalSchema

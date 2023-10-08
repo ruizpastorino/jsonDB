@@ -38,14 +38,14 @@ const addUser = () =>
 		tenant: '',
 		rank: 25,
 		tags: ['kinder', 'cats'],
-		relatives: 
+		relatives: [
 			{
 				name: 'agustin',
 				lastname: 'ruiz',
 				age: '788',
 				nicknames: [{ name: 'agustin' }],
 			},
-		
+		],
 	})
 
 const updatedUser = () =>
