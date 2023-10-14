@@ -6,7 +6,7 @@
   "main": "./database/testDB.js",
   "scripts": {
     "start": "nodemon --ignore db.json ./database/testDB.js",
-    "dev":"nodemon index.js"
+    "dev":"nodemon --ignore db.json ./index.js"
   },
   "author": "agustin ruiz pastorino",
   "license": "ISC",

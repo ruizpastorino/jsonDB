@@ -3,7 +3,8 @@ import { CreateModel } from './main.js'
 const schemas = {}
 
 schemas.users = {
-	/* 	username: { type: 'string', required: true },
+	username: { type: 'string', required: true },
+		
 	data: {
 		name: 'string',
 		lastname: 'string',
@@ -16,7 +17,7 @@ schemas.users = {
 	tenant: 'string',
 	tags: ['string'],
 	createDate: { type: 'date', default: new Date().toISOString() },
-	rank: 'number', */
+	rank: 'number',
 	relatives: [
 		{
 			name: { type: 'string', required: true },

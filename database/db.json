@@ -1,99 +1,90 @@
 {
-    "users": [
-      {
-        "id": 1,
-        "data": {
-          "name": "agustin",
-          "lastname": "pastorino",
-          "age": 38,
-          "gender": "male",
-          "birthDate": "1985-05-10T00:00:00.000Z"
-        },
-        "username": "a.ruiz",
-        "password": "maitena",
-        "tenant": "lordOfTheRing",
-        "createDate": "",
-        "rank": 25,
-        "tags": ["developer", "male", 120],
-        "relatives": [
-          { "name": "jorge", "lastname": "ruiz", "age": 64 },
-          { "name": "mirta", "lastname": "pastorino", "age": 63 }
-        ]
-      },
-      {
-        "id": 2,
-        "data": {
-          "name": "ivana",
-          "lastname": "ortega",
-          "age": 39,
-          "gender": "female",
-          "birthDate": "1984-09-06T00:00:00.000Z"
-        },
-        "username": "i.ortega",
-        "password": "maitena",
-        "tenant": "lordOfTheRing",
-        "createDate": "",
-        "rank": 50,
-        "tags": ["agent", "female", 70],
-        "relatives": [
-          { "name": "ana maria", "lastname": "gallardo", "age": 61 },
-          { "name": "gonzalo", "lastname": "vidale", "age": 63 }
-        ]
-      },
-      {
-        "id": 3,
-        "data": {
-          "name": "jorge",
-          "lastname": "ruiz",
-          "age": 63,
-          "gender": "male",
-          "birthDate": "1959-10-10T00:00:00.000Z"
-        },
-        "username": "j.ruiz",
-        "password": "maitena",
-        "tenant": "lordOfTheRing",
-        "createDate": "",
-        "rank": 75,
-        "tags": ["retired", "male", 110],
-        "relatives": [
-          { "name": "gregorio", "lastname": "ruiz", "age": 55 },
-          { "name": "marta", "lastname": "albornoz", "age": 78 }
-        ]
-      },
-      {
-        "id": "ddc68f30-c54b-11ed-a87b-51a40c22bda7/6942",
-        "data": {
-          "id": "ddc68f31-c54b-11ed-a87b-51a40c22bda7/2104",
-          "name": "maitena",
-          "lastname": "ruiz ortega",
-          "age": 6,
-          "birthDate": "2016-07-12T00:00:00.000Z",
-          "gender": "female"
-        },
-        "active": true,
-        "username": "m.ruiz",
-        "password": "pillow",
-        "tenant": "",
-        "rank": 25,
-        "tags": ["kinder", "cats", 2],
-        "createDate": "2023-03-18T05:15:15.234Z",
-        "relatives": [
-          {
-            "name": "agustin",
-            "lastname": "ruiz",
-            "age": "2023-03-18T04:39:46.788Z"
-          },
-          {
-            "name": "ivana",
-            "lastname": "ortega",
-            "age": "1985-05-10T00:00:00.000Z"
-          }
-        ]
-      }
-    ],
-    "accounts": [],
-    "movements": [],
-    "categories": [],
-    "loans": []
-  }
-  
+	"users": [
+		{
+			"id": 1,
+			"data": {
+				"name": "agustin",
+				"lastname": "pastorino",
+				"age": 38,
+				"gender": "male",
+				"birthDate": "1985-05-10T00:00:00.000Z"
+			},
+			"username": "a.ruiz",
+			"password": "maitena",
+			"tenant": "lordOfTheRing",
+			"createDate": "",
+			"rank": 25,
+			"tags": ["developer", "male", 120],
+			"relatives": [
+				{ "name": "jorge", "lastname": "ruiz", "age": 64 },
+				{ "name": "mirta", "lastname": "pastorino", "age": 63 }
+			]
+		},
+		{
+			"id": 2,
+			"data": {
+				"name": "ivana",
+				"lastname": "ortega",
+				"age": 39,
+				"gender": "female",
+				"birthDate": "1984-09-06T00:00:00.000Z"
+			},
+			"username": "i.ortega",
+			"password": "maitena",
+			"tenant": "lordOfTheRing",
+			"createDate": "",
+			"rank": 50,
+			"tags": ["agent", "female", 70],
+			"relatives": [
+				{ "name": "ana maria", "lastname": "gallardo", "age": 61 },
+				{ "name": "gonzalo", "lastname": "vidale", "age": 63 }
+			]
+		},
+		{
+			"id": 3,
+			"data": {
+				"name": "jorge",
+				"lastname": "ruiz",
+				"age": 63,
+				"gender": "male",
+				"birthDate": "1959-10-10T00:00:00.000Z"
+			},
+			"username": "j.ruiz",
+			"password": "maitena",
+			"tenant": "lordOfTheRing",
+			"createDate": "",
+			"rank": 75,
+			"tags": ["retired", "male", 110],
+			"relatives": [
+				{ "name": "gregorio", "lastname": "ruiz", "age": 55 },
+				{ "name": "marta", "lastname": "albornoz", "age": 78 }
+			]
+		},
+		{
+			"id": "ddc68f30-c54b-11ed-a87b-51a40c22bda7/6942",
+			"data": {
+				"id": "ddc68f31-c54b-11ed-a87b-51a40c22bda7/2104",
+				"name": "maitena",
+				"lastname": "ruiz ortega",
+				"age": 6,
+				"birthDate": "2016-07-12T00:00:00.000Z",
+				"gender": "female"
+			},
+			"active": true,
+			"username": "m.ruiz",
+			"password": "pillow",
+			"tenant": "",
+			"rank": 25,
+			"tags": ["kinder", "cats", 2],
+			"createDate": "2023-03-18T05:15:15.234Z",
+			"relatives": [
+				{ "name": "agustin", "lastname": "ruiz", "age": "2023-03-18T04:39:46.788Z" },
+				{ "name": "ivana", "lastname": "ortega", "age": "1985-05-10T00:00:00.000Z" }
+			]
+		}
+	],
+	"accounts": [],
+	"movements": [],
+	"categories": [],
+	"loans": []
+}

@@ -35,7 +35,7 @@ const evaluate = (ref, data, crtKey, update) => {
 
 				keys.forEach(key => {
 					const dataKey = data[key]
-					let schemaKey = schema[0]?.[key] || schema[key]
+					let schemaKey = schema[0]?.[key] || schema[key].type || schema[key]
 					const location = crtKey ? `${crtKey}.${key}` : key
 
 					printLog({ data, schema, schemaKey, dataKey, key, keys })

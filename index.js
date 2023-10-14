@@ -1,7 +1,9 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import { User } from './database/schemas.js'
 import { createConection } from './database/main.js'
+import './database/testDB.js'
+import { User } from './database/schemas.js'
+import { addUser, updatedUser } from './database/testDB.js'
 
 const app = express()
 
@@ -11,75 +13,20 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.listen(4000, () => console.log('Server connected on port 4000'))
 
-app.get('/', (req, res) => {
+app.get('/:user', (req, res) => {
 	try {
-		addUser()
+		updatedUser()
 		const response = User.findOne({
-			username: 'm.ruiz2',
+			username: req.params.user,
 		}).values()
+
+		if (!response) {
+			res.status(404).json({ message: 'user not found', param: req.params.user })
+		}
+
 		return res.json(response)
 	} catch (error) {
 		res.status(401).send(error.message)
+		console.log({ message: error.message.toUpperCase() })
 	}
 })
-
-const addUser = () =>
-	User.add({
-		username: 'm.ruiz2',
-		data: {
-			name: 'maitena',
-			lastname: 'ruiz ortega',
-			age: 6,
-			gender: 'male',
-			birthDate: '2016-07-12T00:00:00.000Z',
-		},
-
-		password: 'pillow',
-		tenant: '',
-		rank: 25,
-		tags: ['kinder', 'cats'],
-		relatives: [
-			{
-				name: 'agustin',
-				lastname: 'ruiz',
-				age: '788',
-				nicknames: [{ name: 'agustin' }],
-			},
-		],
-	})
-
-const updatedUser = () =>
-	User.update(
-		{
-			relatives: {
-				$push: {
-					$each: [
-						{
-							name: 'ana',
-							lastname: 'gallardo',
-							age: Date.now(),
-							nicknames: [{ name: 'abuela ani', invalidField: 'wrong' }],
-						},
-					],
-				},
-			},
-		},
-		{ username: 'm.ruiz' }
-	)
-
-/* 
-	
-	relatives: {
-				$push: {
-					$each: [
-						{
-							name: 'ana',
-							lastname: 'gallardo',
-							age: Date.now(),
-							nicknames: [{ name: 'abuela ani', invalidField: 'wrong' }],
-						},
-					],
-				},
-			},
-	
-	*/
